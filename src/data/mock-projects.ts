@@ -1,4 +1,6 @@
-export type ProjectData = Record<string, Record<string, number>>;
+import type { ProjectData } from "@/types/projects";
+
+export type { ProjectData };
 
 export const mockProjectData: ProjectData = {
   SP: {
