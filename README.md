@@ -41,13 +41,20 @@ This application renders an interactive map of Brazil where each state is color-
 ```
 src/
 ├── App.tsx                    # Root layout and page title
+├── types/
+│   ├── geo.ts                 # GeoFeatureData, StateProperties, MunProperties, ViewMode
+│   └── projects.ts            # ProjectData type
 ├── components/
-│   ├── BrazilMap.tsx          # Main map component with country/state views
+│   ├── BrazilMap.tsx          # Main map orchestrator (country view + navigation)
+│   ├── StateView.tsx          # State drill-down view (municipality choropleth + list)
 │   ├── GeoCanvas.tsx          # Reusable Canvas-based GeoJSON renderer
+│   ├── ColorLegend.tsx        # Gradient legend bar component
 │   └── ui/                    # shadcn/ui components
 ├── data/
 │   └── mock-projects.ts       # Sample project data per state/municipality
 ├── lib/
+│   ├── canvas.ts              # Canvas drawing, hit-testing and color map utilities
+│   ├── tooltip.ts             # Imperative tooltip show/hide helpers
 │   ├── ibge.ts                # IBGE API client with caching and preloading
 │   └── utils.ts               # Utility helpers (cn)
 public/
