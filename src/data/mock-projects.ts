@@ -4,7 +4,7 @@ export type { ProjectData };
 
 export const mockProjectData: ProjectData = {
   SP: {
-    "sao Carlos": 10,
+    "São Carlos": 10,
     "Ribeirão Preto": 2,
     "São Paulo": 25,
     Campinas: 8,
