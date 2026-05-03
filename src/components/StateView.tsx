@@ -1,7 +1,6 @@
 import * as d3 from "d3";
 import type { GeoFeatureData, MunProperties, ViewMode } from "@/types/geo";
 import type { ProjectData } from "@/types/projects";
-import { cn } from "@/lib/utils";
 import { GeoCanvas } from "./GeoCanvas";
 import { ColorLegend } from "./ColorLegend";
 
@@ -10,8 +9,6 @@ interface StateViewProps {
   data: ProjectData;
   width: number;
   height: number;
-  className?: string;
-  containerRef: React.RefObject<HTMLDivElement | null>;
   onBack: () => void;
 }
 
@@ -20,8 +17,6 @@ export function StateView({
   data,
   width,
   height,
-  className,
-  containerRef,
   onBack,
 }: StateViewProps) {
   const { sigla, stateName, geoData: munGeo } = view;
@@ -48,7 +43,7 @@ export function StateView({
   }
 
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
+    <div className="relative w-full">
       <button
         onClick={onBack}
         className="mb-3 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
@@ -86,7 +81,7 @@ export function StateView({
         colorScale={munColorScale}
         strokeColor="#cbd5e1"
         strokeWidth={0.3}
-        className="mx-auto block max-w-full"
+        className="block w-full"
         tooltipLabel="projetos"
         tooltipSubtitle={`${stateName} (${sigla})`}
       />

@@ -190,15 +190,17 @@ export function GeoCanvas({
   }
 
   return (
-    <div
-      className={className}
-      style={{ position: "relative", width: "fit-content" }}
-    >
+    <div className={className} style={{ position: "relative" }}>
       <canvas
         ref={canvasRef}
         width={width * dpr}
         height={height * dpr}
-        style={{ width, height, cursor: "pointer", display: "block" }}
+        style={{
+          width: "100%",
+          aspectRatio: `${width} / ${height}`,
+          cursor: "pointer",
+          display: "block",
+        }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}

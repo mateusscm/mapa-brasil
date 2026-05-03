@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as d3 from "d3";
 import type { FeatureCollection, Geometry } from "geojson";
 import type {
@@ -14,24 +14,23 @@ import {
   preloadStateMunicipalities,
 } from "@/lib/ibge";
 import { cn } from "@/lib/utils";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
 import { GeoCanvas } from "./GeoCanvas";
 import { ColorLegend } from "./ColorLegend";
 import { StateView } from "./StateView";
 
+/** Aspect ratio of Brazil's bounding box (height / width) */
+const ASPECT_RATIO = 720 / 800;
+
 interface BrazilMapProps {
   data: ProjectData;
-  width?: number;
-  height?: number;
   className?: string;
 }
 
-export function BrazilMap({
-  data,
-  width = 800,
-  height = 720,
-  className,
-}: BrazilMapProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+export function BrazilMap({ data, className }: BrazilMapProps) {
+  const [containerRef, width] = useContainerWidth();
+  const height = Math.round(width * ASPECT_RATIO);
+
   const [statesGeo, setStatesGeo] = useState<FeatureCollection<
     Geometry,
     StateProperties
@@ -141,52 +140,49 @@ export function BrazilMap({
     setView({ type: "country" });
   }
 
-  if (!statesGeo || loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-96 gap-3">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        {loading && (
-          <p className="text-sm text-zinc-500">Carregando municípios...</p>
-        )}
-      </div>
-    );
-  }
-
-  if (view.type === "state") {
-    return (
-      <StateView
-        view={view}
-        data={data}
-        width={width}
-        height={height}
-        className={className}
-        containerRef={containerRef}
-        onBack={handleBack}
-      />
-    );
-  }
-
+  // Outer wrapper is always rendered so the ResizeObserver can measure the container
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
-      <GeoCanvas
-        geo={statesGeo}
-        featureDataMap={stateFeatureMap}
-        width={width}
-        height={height}
-        projection={countryProjection}
-        colorScale={stateColorScale}
-        className="mx-auto block max-w-full"
-        tooltipLabel="projetos"
-        onFeatureClick={handleStateClick}
-        onFeatureHover={handleStateHover}
-      />
-
-      <ColorLegend
-        max={maxStateCount}
-        label="projetos"
-        gradientFrom="#e2e8f0"
-        gradientTo={d3.interpolateBlues(0.9)}
-      />
+    <div ref={containerRef} className={cn("w-full", className)}>
+      {!width || !statesGeo || loading ? (
+        <div
+          className="flex flex-col items-center justify-center gap-3"
+          style={{ height: height || 320 }}
+        >
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+          {loading && (
+            <p className="text-sm text-zinc-500">Carregando municípios...</p>
+          )}
+        </div>
+      ) : view.type === "state" ? (
+        <StateView
+          view={view}
+          data={data}
+          width={width}
+          height={height}
+          onBack={handleBack}
+        />
+      ) : (
+        <>
+          <GeoCanvas
+            geo={statesGeo}
+            featureDataMap={stateFeatureMap}
+            width={width}
+            height={height}
+            projection={countryProjection}
+            colorScale={stateColorScale}
+            className="block w-full"
+            tooltipLabel="projetos"
+            onFeatureClick={handleStateClick}
+            onFeatureHover={handleStateHover}
+          />
+          <ColorLegend
+            max={maxStateCount}
+            label="projetos"
+            gradientFrom="#e2e8f0"
+            gradientTo={d3.interpolateBlues(0.9)}
+          />
+        </>
+      )}
     </div>
   );
 }
